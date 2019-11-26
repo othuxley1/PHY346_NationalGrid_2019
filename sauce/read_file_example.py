@@ -31,5 +31,4 @@ def load_rhpp_csvs(file_path):
     cols = ["Datetime", "H_hp", "temp", "wind", "precip"]
     data_df = pd.DataFrame(data_list, columns=cols)
     data_df.set_index("Datetime", inplace=True)
-    print("hello!")
     return
