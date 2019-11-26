@@ -5,8 +5,11 @@ import glob
 import h5py
 from IPython.core.debugger import set_trace
 import sys
+import matplotlib.pyplot as plt
 #from generic_tools import print_progress
 from zipfile import ZipFile
+import multiprocessing
+import datetime
 
 def main():
     
@@ -18,7 +21,7 @@ def main():
 
 
 
-    #print(file_paths)
+    print(file_paths)
 
     #get metadata file. 7955 for cleaned data
     metafile = "../data/7955_rhpp_metadata.csv"
@@ -38,7 +41,7 @@ def main():
     "Installer.net.capacity.as.recorded"]
 
     metadata[meta_cols]
-    
+    #print(metadata[meta_cols])
     def mung_rhpp_files(file_paths):
         """
         Open all rhpp files and save to hdf5 filestore.
@@ -60,7 +63,7 @@ def main():
     
                 # load heatpump data from file
                 
-                #import pdb; pdb.set_trace()
+                
                 file_object = myzip.open(file)
                 file_data = pd.read_csv(file_object)
     
@@ -68,11 +71,13 @@ def main():
                 file_data.Record_time = pd.to_datetime(file_data.Record_time)
                 file_data.set_index("Record_time", inplace=True)
                 
-                # example daily sum
                 # think carefully - you don't want to sum the temperature etc
                 day_sum = file_data.groupby(pd.Grouper(freq='D')).sum()
+                hour_sum = file_data.groupby(pd.Grouper(freq='H')).sum()
+                #import pdb; pdb.set_trace()
+                #print(hour_sum.E_hp)
                 print(file)
-    
+
                 # for aggregation of all hps
                 # ToDo
                 # aggregate per half hour
@@ -86,8 +91,30 @@ def main():
                 # save to file 
     
                 i += 1
+                #usage_daily = plt.figure(figsize=(15,5))
+                #plt.plot(day_sum.E_hp*0.03)
+                #plt.title=(file)
+                
+                print("loop done")
+                if i>>0:
+                    break
                 #print_progress(i, N)
+            fig = plt.figure()
+            usage_hourly = plt.figure(figsize=(15,5))
+            plt.plot(day_sum.E_hp*0.03)
+            plt.title=("hourly")
+            axes = plt.gca()
+            axes.set_ylim([0,2000])
+            #axes.set_xlim([datetime.date(2014, 1, 1), datetime.date(2014, 2, 1)])
+            
+            
+            usage_daily = plt.figure(figsize=(15,5))
+            plt.plot(day_sum.E_hp*0.03)
+            plt.title=("daily")
+            
     mung_rhpp_files(file_paths)
 
 main()
+
+
 print("done")
