@@ -4,6 +4,8 @@ Created on Mon Nov 25 14:21:39 2019
 
 @author: jonat
 """
+import numpy as np
+import pandas as pd
 from datetime import datetime
 
 def main():
@@ -29,8 +31,5 @@ def load_rhpp_csvs(file_path):
     cols = ["Datetime", "H_hp", "temp", "wind", "precip"]
     data_df = pd.DataFrame(data_list, columns=cols)
     data_df.set_index("Datetime", inplace=True)
-    
-    import pdb; pdb.set_trace()
-            
-if __name__ == "__main__":
-    main()
+    print("hello!")
+    return
