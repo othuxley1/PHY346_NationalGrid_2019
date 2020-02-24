@@ -10,13 +10,24 @@ import numpy as np
 import pandas as pd
 import glob
 import csv
+from zipfile import ZipFile
+
+# Config
+hp_folder = ""
+outfile = ""
+# ==============
+
 
 def all_HP_temp_filtered():  #csv of 15 min temp data for each HP
     
     cols = ["HPID", "H_hp", "E_hp", "temp"]
     data_df_15min = pd.DataFrame(columns=cols)
+
+    for filename in glob.glob('{}/*.zip'.format(hp_folder)):
+        with ZipFile(filename, 'r') as zip:
+            zip.extractall()
     
-    for filename in glob.glob('*.csv'):
+    for filename in glob.glob('{}/*.csv'.format(hp_folder)):
         HPID = filename[4:8]
         print(HPID)                     #to show progress
         data_list_indi = []
@@ -33,11 +44,14 @@ def all_HP_temp_filtered():  #csv of 15 min temp data for each HP
         cols = ["HPID","Datetime", "H_hp", "E_hp", "temp"]
         data_df_indi = pd.DataFrame(data_list_indi, columns=cols)
         data_df_indi = data_df_indi[data_df_indi.E_hp > 0.03]
+        rows = len(data_df_indi.index)
         median = data_df_indi.loc[:,"E_hp"].median()
         iqr = data_df_indi.loc[:,"E_hp"].quantile(0.75) - data_df_indi.loc[:,"E_hp"].quantile(0.25)
         data_df_indi_filtered = data_df_indi[data_df_indi.E_hp < (median + 4*iqr)]
-      #  import pdb; pdb.set_trace() 
-        data_df_indi_15min = data_df_indi.resample('15min',on='Datetime').max()
+        rowsf = len(data_df_indi_filtered.index)
+        ratio_filtered = (rows - rowsf) / rows
+        print(ratio_filtered)
+        data_df_indi_15min = data_df_indi_filtered.resample('15min',on='Datetime').max()
         data_df_indi_15min.drop("Datetime", axis=1, inplace=True)
         data_df_indi_15min.HPID.fillna(HPID, inplace=True)
         
@@ -46,7 +60,7 @@ def all_HP_temp_filtered():  #csv of 15 min temp data for each HP
                 
     data_df_15min.set_index("HPID", inplace=True)
     
-    data_df_15min.to_csv (r'C:\Users\jonat\GitKraken_Code\PHY346_NationalGrid_2019\sauce\all_HP_table.csv')
+    data_df_15min.to_csv ('{}/all_HP_table.csv'.format(outfile))
     print(data_df_15min)
     return data_df_15min
 
