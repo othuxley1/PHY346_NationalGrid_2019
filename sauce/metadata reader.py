@@ -35,7 +35,6 @@ def meta_reader(IDs,filePath):
         #Reopening the file
         with open(filePath,newline='', encoding='utf-8') as csvFile:
             csvReader = csv.reader(csvFile)
-            print(ID)
             #Looping through every heat pump contained in the metadata
             for row in csvReader:
                 #Checking the IP of the heat pump matches the searched ID
