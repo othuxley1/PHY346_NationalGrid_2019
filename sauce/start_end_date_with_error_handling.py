@@ -45,6 +45,7 @@ def indi_HP_table():    #csv of every HP's start & end times and data for amount
             no_NA_Ehp = data_df.E_hp.isna().sum() 
             fraction_NA_Ehp = no_NA_Ehp / (data_df.E_hp.count() + no_NA_Ehp) 
             data_list.append([HPID, start, end, no_NA_Hhp, fraction_NA_Hhp, no_NA_Ehp, fraction_NA_Ehp]) 
+        #check for errors and save errors found to a file
         except Exception as err:
             print(err)
 #            if not os.path.isfile(error_file):
